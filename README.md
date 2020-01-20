@@ -28,7 +28,7 @@ Orthography.Generic.UpperCamelCase.format(ident)
     => "UrlSession"
 ```
 
-Thanks to [https://github.com/OneSadCookie/TransformCoding](TransformCoding), you can also directly
+Thanks to [TransformCoding](https://github.com/OneSadCookie/TransformCoding), you can also directly
 decode identifiers from JSON:
 
 ```swift
