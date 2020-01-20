@@ -2,6 +2,8 @@ import TransformCoding
 
 private let swiftLower = Orthography(casing: .inverseSentence, acronyms: .upperUnlessInitial)
 
+/// By default, these will use `AcronymHandling.CommonAcronyms` to guess acronyms.
+/// If you need control over that, wrap one of these up in `WithAcronyms`.
 public protocol PredefinedOrthography: TransformCodable where
     EncodedType == String,
     DecodedType == Identifier
@@ -23,8 +25,18 @@ extension PredefinedOrthography {
 
 extension PredefinedOrthography {
 
-    public static func parse(_ string: String) throws -> Identifier {
-        try orthography.parse(string)
+    public static func parse(
+        _ string: String,
+        isAcronym: (String) -> Bool = AcronymHandling.CommonAcronyms.isAcronym(_:)
+    ) throws -> Identifier {
+        try orthography.parse(string, isAcronym: isAcronym)
+    }
+
+    public static func parse<A: AcronymList>(
+        _ string: String,
+        acronymList: A.Type
+    ) throws -> Identifier {
+        try orthography.parse(string, acronymList: acronymList)
     }
     
     public static func format(_ identifier: Identifier) -> String {

@@ -7,6 +7,16 @@ struct TestCodingTransform: Codable {
     var identifier: Identifier
 }
 
+struct TestCodingTransformOnlyIDIsAnAcronym: Codable {
+    @TransformCoding<
+        WithAcronyms<
+            Orthography.Generic.snake_case,
+            AcronymHandling.IDOr<AcronymHandling.NoAcronyms>
+        >
+    >
+    var identifier: Identifier
+}
+
 struct Compatible: Codable, Equatable {
     var identifier: String
 }
@@ -20,6 +30,14 @@ private func checkForInvalidCasing(_ error: Error) {
     }
 }
 
+struct WTF: AcronymList {
+
+    static func isAcronym(_ string: String) -> Bool {
+        string.lowercased() == "wtf"
+    }
+    
+}
+
 final class Swift_IdentifierTests: XCTestCase {
 
     func testCodingTransform() throws {
@@ -27,6 +45,16 @@ final class Swift_IdentifierTests: XCTestCase {
         let data = try JSONEncoder().encode(compat)
         let test = try JSONDecoder().decode(TestCodingTransform.self, from: data)
         XCTAssertEqual(Orthography.Swift.TypeIdentifier.format(test.identifier), "URLSchemeMangler")
+        let data2 = try JSONEncoder().encode(test)
+        let compat2 = try JSONDecoder().decode(Compatible.self, from: data2)
+        XCTAssertEqual(compat, compat2)
+    }
+    
+    func testCodingTransformWithAcronyms() throws {
+        let compat = Compatible(identifier: "id_scheme_mangler")
+        let data = try JSONEncoder().encode(compat)
+        let test = try JSONDecoder().decode(TestCodingTransformOnlyIDIsAnAcronym.self, from: data)
+        XCTAssertEqual(Orthography.Swift.TypeIdentifier.format(test.identifier), "IDSchemeMangler")
         let data2 = try JSONEncoder().encode(test)
         let compat2 = try JSONDecoder().decode(Compatible.self, from: data2)
         XCTAssertEqual(compat, compat2)
@@ -81,6 +109,10 @@ final class Swift_IdentifierTests: XCTestCase {
             Orthography(separator: "_", casing: .lower, acronyms: .upper).format(
                 try Orthography.Swift.TypeIdentifier.parse("ImAlwaysLikeWTF")),
             "im_always_like_WTF")
+        XCTAssertEqual(
+            Orthography(separator: "_", casing: .lower, acronyms: .upper).format(
+                try Orthography.Generic.UpperCamelCase.parse("ImAlwaysLikeWtf", acronymList: WTF.self)),
+            "im_always_like_WTF")
     }
     
     func testParseCase() {
@@ -108,10 +140,14 @@ final class Swift_IdentifierTests: XCTestCase {
         XCTAssertEqual(
             o.format(Identifier.fuzzyParse("UpperCamelJSON")),
             "upper_camel_JSON")
+        XCTAssertEqual(
+            o.format(Identifier.fuzzyParse("snake_wtf", acronymList: WTF.self)),
+            "snake_WTF")
     }
 
     static var allTests = [
         ("testCodingTransform", testCodingTransform),
+        ("testCodingTransformWithAcronyms", testCodingTransformWithAcronyms),
         ("testBasics", testBasics),
         ("testInitialAcronym", testInitialAcronym),
         ("testParse", testParse),

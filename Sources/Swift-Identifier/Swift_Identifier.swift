@@ -54,9 +54,16 @@ public struct Orthography: Equatable {
     
     public func parse(
         _ string: String,
-        isAcronym: (String) -> Bool = isCommonAcronym
+        isAcronym: (String) -> Bool = AcronymHandling.CommonAcronyms.isAcronym(_:)
     ) throws -> Identifier {
         try parseInternal(string, isAcronym)
+    }
+    
+    public func parse<A: AcronymList>(
+        _ string: String,
+        acronymList: A.Type
+    ) throws -> Identifier {
+        try parseInternal(string, A.isAcronym(_:))
     }
     
 }
@@ -93,27 +100,18 @@ public struct Identifier {
     
     /// parse any string, but probably badly. Prefer to use `Orthography.parse` if you
     /// know what the string looks like.
-    static func fuzzyParse(
+    public static func fuzzyParse(
         _ string: String,
-        isAcronym: (String) -> Bool = isCommonAcronym
+        isAcronym: (String) -> Bool = AcronymHandling.CommonAcronyms.isAcronym(_:)
     ) -> Identifier {
         fuzzyParseInternal(string, isAcronym)
     }
+    
+    public static func fuzzyParse<A: AcronymList>(
+        _ string: String,
+        acronymList: A.Type
+    ) -> Identifier {
+        fuzzyParseInternal(string, A.isAcronym(_:))
+    }
 
-}
-
-private let commonAcronyms = Set([
-    "html", "http", "https",
-    "jpeg", "jpg", "json",
-    "pdf", "png",
-    "ssh", "svg",
-    "url", "utf8", "utf16",
-    "xml",
-])
-
-/// A helpful list of acronyms commonly found in programming identifiers.
-/// Pull requests welcome!
-/// You can provide your own instead, or build your own around this one.
-public func isCommonAcronym(_ string: String) -> Bool {
-    commonAcronyms.contains(string.lowercased())
 }
