@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "TransformCoding",
+        "repositoryURL": "https://github.com/onesadcookie/TransformCoding.git",
+        "state": {
+          "branch": null,
+          "revision": "ce2916c94e5a6ddf72441f6a6c023969ef05add9",
+          "version": "1.0.0"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
