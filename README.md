@@ -43,7 +43,7 @@ struct MyJSONObject: Codable {
 Add to your `Package.swift`'s `dependencies`: array:
 
 ```swift
-.package(url: "https://github.com/onesadcookie/Swift-Identifier.git", .exact("0.2.0")),
+.package(url: "https://github.com/onesadcookie/Swift-Identifier.git", .exact("0.2.1")),
 ```
 
 You should currently always depend upon an *exact* version of Swift-Identifier, as there are a lot of

@@ -144,6 +144,22 @@ final class Swift_IdentifierTests: XCTestCase {
             o.format(Identifier.fuzzyParse("snake_wtf", acronymList: WTF.self)),
             "snake_WTF")
     }
+    
+    func testDigits() throws {
+        let o = Orthography(separator: "_", casing: .lower, acronyms: .upper)
+        XCTAssertEqual(
+            o.format(try Orthography.Generic.snake_case.parse("dog123_cat123")),
+            "dog123_cat123")
+        XCTAssertEqual(
+            o.format(try Orthography.Generic.SCREAMING_SNAKE_CASE.parse("DOG123_CAT123")),
+            "dog123_cat123")
+        XCTAssertEqual(
+            o.format(try Orthography.Generic.camelCase.parse("dog123Cat123")),
+            "dog123_cat123")
+        XCTAssertEqual(
+            o.format(try Orthography.Generic.UpperCamelCase.parse("Dog123Cat123")),
+            "dog123_cat123")
+    }
 
     static var allTests = [
         ("testCodingTransform", testCodingTransform),
@@ -153,6 +169,7 @@ final class Swift_IdentifierTests: XCTestCase {
         ("testParse", testParse),
         ("testParseCase", testParseCase),
         ("testFuzzyParse", testFuzzyParse),
+        ("testDigits", testDigits),
     ]
     
 }

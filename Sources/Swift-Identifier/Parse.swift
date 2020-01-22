@@ -96,7 +96,7 @@ extension Orthography {
             case (.lower,           _),
                  (.sentence,        false),
                  (.inverseSentence, true):
-                guard word.allSatisfy({ $0.isLowercase }) else {
+                guard word.allSatisfy({ !$0.isUppercase }) else {
                     throw ParseError.invalidCasing
                 }
             case (.title,           _),
@@ -104,21 +104,21 @@ extension Orthography {
                  (.inverseSentence, false):
                 var it = word.makeIterator()
                 if let c = it.next() {
-                    guard c.isUppercase else {
+                    guard !c.isLowercase else {
                         throw ParseError.invalidCasing
                     }
                 }
-                guard IteratorSequence(it).allSatisfy({ $0.isLowercase }) else {
+                guard IteratorSequence(it).allSatisfy({ !$0.isUppercase }) else {
                     throw ParseError.invalidCasing
                 }
             case (.screaming, _):
-                guard word.allSatisfy({ $0.isUppercase }) else {
+                guard word.allSatisfy({ !$0.isLowercase }) else {
                     throw ParseError.invalidCasing
                 }
             }
         case let (.acronym(acronym), .upper,              _),
              let (.acronym(acronym), .upperUnlessInitial, false):
-            guard acronym.allSatisfy({ $0.isUppercase }) else {
+            guard acronym.allSatisfy({ !$0.isLowercase }) else {
                 throw ParseError.invalidCasing
             }
         }
